@@ -1,0 +1,15 @@
+{
+    "git.ignoreLimitWarning": true,
+    "rust-analyzer.cargo.features": [
+    ],
+    "rust-analyzer.rustfmt.overrideCommand": [
+      "rustup",
+      "run",
+      "nightly",
+      "--",
+      "rustfmt",
+      "--edition",
+      "2021",
+      "--"
+    ]
+  }
