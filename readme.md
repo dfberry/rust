@@ -1,6 +1,7 @@
 # Rust
 
-[https://github.com/dfberry/rust.git](https://github.com/dfberry/rust.git)
+* Code: [https://github.com/dfberry/rust.git](https://github.com/dfberry/rust.git)
+* [YouTube playlist](https://www.youtube.com/playlist?list=PLAQX7qAUlTDh6RoD-S8HhJdSF0mEEXuYV)
 
 ## Reference
 
@@ -12,3 +13,5 @@
 * Monorepo 
 * Debugging
 * Example crate
+
+[YouTube video](https://youtu.be/uEPa3lWKPMs)
