@@ -13,7 +13,25 @@ name = "crate_001_hello_world_with_cargo_new"
 version = "0.1.0"
 
 [[package]]
-name = "crate_002_guessing_game"
+name = "crate_002_guessing_game_01"
+version = "0.1.0"
+
+[[package]]
+name = "crate_002_guessing_game_02"
+version = "0.1.0"
+dependencies = [
+ "rand",
+]
+
+[[package]]
+name = "crate_002_guessing_game_03"
+version = "0.1.0"
+dependencies = [
+ "rand",
+]
+
+[[package]]
+name = "crate_002_guessing_game_04"
 version = "0.1.0"
 dependencies = [
  "rand",
@@ -32,9 +50,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.152"
+version = "0.2.153"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13e3bf6590cbc649f4d1a3eefc9d5d6eb746f5200ffb04e5e142700b8faa56e7"
+checksum = "9c198f91728a82281a64e1f4f9eeb25d82cb32a5de251c6bd1b5154d63a8e7bd"
 
 [[package]]
 name = "ppv-lite86"
