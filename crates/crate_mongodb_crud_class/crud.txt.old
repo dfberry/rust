@@ -1,0 +1,132 @@
+use futures::{StreamExt, stream::TryStreamExt};
+use mongodb::{Client, Collection, Cursor, error::{Error}, bson::{Document, doc, oid::ObjectId}, /*bson::oid::ObjectId,*/ bson::Document, options::ClientOptions, options::FindOptions,  results::DeleteResult, results::UpdateResult};
+use std::{io, str::FromStr, error::Error as StdError, fmt };
+use serde::{ Serialize, de::DeserializeOwned} ;
+use dotenv::dotenv;
+
+//----------------------------------------
+// Create new Error that encapsulates error
+// that happen in this module
+
+#[derive(Debug)]
+pub struct CrudError {
+    message: String,
+}
+
+impl CrudError {
+    pub fn new(message: &str) -> CrudError {
+        CrudError {
+            message: message.to_string(),
+        }
+    }
+}
+
+impl fmt::Display for CrudError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+impl StdError for CrudError {}
+//----------------------------------------
+pub async fn get_collection_client<T>(connection_string: &str, database_name: &str, collection_name: &str) -> Result<Collection<T>, Box<dyn StdError>> {
+    dotenv().ok();
+    
+    let client = Client::with_uri_str(connection_string).await?;
+    let database = client.database(database_name);
+    let collection = database.collection::<T>(collection_name);
+
+    Ok(collection)
+}
+//----------------------------------------
+
+pub struct MyCollection<T> {
+    collection_name: String,
+    item T
+}
+
+
+impl MyCollection {
+
+    pub fn new(collection_name: String) -> Self {
+        Self {
+            collection_name,
+        }
+    }
+
+    pub async fn create(
+        collection_client: &Collection<T>,
+        item: &T) -> Result<String, Box<dyn StdError>> {
+    
+        let result = match collection_client.insert_one(item.clone(), None).await {
+            Ok(result) => result,
+            Err(e) => return Err(Box::new(e)),
+        };       
+        // return id as string
+        Ok(result.inserted_id.as_object_id().unwrap().to_hex())
+    }
+
+    pub async fn read(
+        collection_client: &Collection<T>,
+        filter: Document) -> Result<Vec<T>, Box<dyn StdError>> {
+
+        let mut cursor = match collection_client.find(filter, None).await {
+            Ok(cursor) => cursor,
+            Err(e) => return Err(Box::new(e)),
+        };
+        let mut results = Vec::new();
+
+        while let Some(result) = cursor.try_next().await {
+            match result {
+                Ok(doc) => results.push(doc),
+                Err(e) => return Err(Box::new(e)),
+            }
+        }
+        Ok(results)
+    }
+}
+    /*
+
+    pub async fn read_by_id<T: DeserializeOwned + Send + Sync + Unpin>(&self,id: &str) -> Result<Option<T>> {
+        let object_id = ObjectId::from_str(&id).unwrap();
+        let filter = doc! { "_id": object_id };
+        self.collection.find_one(filter, None).await
+    }
+    pub async fn update<T: Serialize>(&self,filter: Document, update: Document) -> Result<()> {
+        let update_result = self.collection.update_one(filter, update, None).await?;
+        if update_result.modified_count == 1 {
+            Ok(())
+        } else {
+            Err(mongodb::error::Error::from(std::io::Error::new(std::io::ErrorKind::Other, "No document was updated")))
+        }
+    }
+    pub async fn update_by_id<T: Serialize>(&self,id: &str, update_document: Document) -> Result<()> {
+        let object_id = ObjectId::from_str(&id).unwrap();
+        let filter = doc! { "_id": object_id };
+        let update_result = self.collection.update_one(filter, update_document, None).await?;
+        if update_result.modified_count == 1 {
+            Ok(())
+        } else {
+            Err(mongodb::error::Error::from(std::io::Error::new(std::io::ErrorKind::Other, "No document was updated")))
+        }
+    }
+
+    pub async fn delete<T: Serialize>(&self,filter: Document) -> Result<()> {
+        let delete_result = self.collection.delete_one(filter, None).await?;
+        if delete_result.deleted_count == 1 {
+            Ok(())
+        } else {
+            Err(mongodb::error::Error::from(std::io::Error::new(std::io::ErrorKind::Other, "No document was deleted")))
+        }
+    }
+    pub async fn delete_by_id<T: Serialize>(&self,id: &str) -> Result<()> {
+        let object_id = ObjectId::from_str(&id).unwrap();
+        let filter = doc! { "_id": object_id };
+        let delete_result = self.collection.delete_one(filter, None).await?;
+        if delete_result.deleted_count == 1 {
+            Ok(())
+        } else {
+            Err(mongodb::error::Error::from(std::io::Error::new(std::io::ErrorKind::Other, "No document was deleted")))
+        }
+    }
+    */
