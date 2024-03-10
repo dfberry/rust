@@ -1,13 +1,13 @@
 [package]
-name = "crate_mongodb_crud"
+name = "crate_mongodb_crud_with_types"
 version = "0.1.0"
 edition = "2021"
 publish = false
 
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
-serde = { version = "1.0.160", features = ["derive"] }
-serde_json = "1.0.96"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 serde_with = { version = "2.3.0", features = ["chrono"] }
 bson = { version = "2.3.0", features = ["chrono-0_4", "serde_with"] }
 dotenv = "0.15.0"
@@ -19,4 +19,3 @@ futures = "0.3"
 chrono = "0.4.34"
 mongodb = "2.8.0"
 rand = "0.8.4"
-thiserror = "1.0.57"
