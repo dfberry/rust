@@ -47,3 +47,15 @@ pub async fn fetch_notes( typed_collection: &Collection<ItemModel>, limit: i64, 
 
     Ok(db_result)
 }
+pub async fn insert_one_item(collection: &Collection<Document>, item:  ) -> Result<(), Box<dyn Error>>{
+    let document = bson::to_document(&json_item).unwrap();
+    
+    match document_to_new_item_request(&document) {
+        Ok(_) => println!("Transformation was successful"),
+        Err(_) => println!("Transformation failed"),
+    }
+
+    // convert document to CreateItemSchema
+    Ok(())
+    
+}

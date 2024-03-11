@@ -380,6 +380,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "create_mongodb_optional_datetime"
+version = "0.1.0"
+dependencies = [
+ "bson",
+ "chrono",
+ "dotenv",
+ "futures",
+ "futures-core",
+ "futures-executor",
+ "futures-io",
+ "futures-util",
+ "mongodb",
+ "rand",
+ "serde",
+ "serde_as",
+ "serde_json",
+ "serde_with 2.3.3",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
 name = "crypto-common"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1420,6 +1442,12 @@ checksum = "3fb1c873e1b9b056a4dc4c0c198b24c3ffa059243875552b2bd0933b1aee4ce2"
 dependencies = [
  "serde_derive",
 ]
+
+[[package]]
+name = "serde_as"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ee4afe4c5c3b69699c4267ae42b838e911466d7ca0005046adc93ac95bb16dd"
 
 [[package]]
 name = "serde_bytes"

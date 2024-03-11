@@ -1,5 +1,7 @@
 use std::fmt;
 use std::error::Error;
+use serde_json::Error as SerdeError;
+use serde::Deserialize;
 
 #[derive(Debug)]
 pub enum MySerializationError {
@@ -14,3 +16,15 @@ impl fmt::Display for MySerializationError {
     }
 }
 impl Error for MySerializationError {}
+
+pub struct MyJsonSerializationError {
+    message: String,
+}
+
+impl From<SerdeError> for MyJsonSerializationError {
+    fn from(error: SerdeError) -> Self {
+        MyJsonSerializationError {
+            message: error.to_string(),
+        }
+    }
+}

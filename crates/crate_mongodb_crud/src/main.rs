@@ -40,4 +40,16 @@ async fn main() {
     let typedlist = get_all_items(&collection_item_model).await.unwrap();
     let jsonlist = convert_vec_to_json(typedlist);
     jsonlist.iter().for_each(|item| println!("{}", item));
+
+    // add item to collection
+    // create item as json
+    let json_item = r#"
+    {
+        "name": "Item 1",
+        "category": "Category 1",
+        "completedAt": null
+    }
+    "#;
+
+
 }
