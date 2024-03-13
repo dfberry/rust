@@ -29,7 +29,9 @@
 			"extensions": [
 				"rust-lang.rust-analyzer",
 				"vadimcn.vscode-lldb",
-				"PolyMeilex.rust-targets"
+				"PolyMeilex.rust-targets",
+				"GitHub.copilot-chat",
+				"jinxdash.prettier-rust"
 			]
 		}
 	},

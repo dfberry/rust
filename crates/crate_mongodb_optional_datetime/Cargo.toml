@@ -1,5 +1,5 @@
 [package]
-name = "create_mongodb_optional_datetime"
+name = "crate_mongodb_optional_datetime"
 version = "0.1.0"
 edition = "2021"
 
@@ -17,7 +17,6 @@ futures-core = "0.3.14"
 futures-util = { version = "0.3.14", features = ["io"] }
 futures-executor = "0.3.14"
 futures = "0.3"
-chrono = "0.4.34"
 mongodb = "2.8.0"
 rand = "0.8.4"
 thiserror = "1.0.57"
