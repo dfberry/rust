@@ -1,8 +1,9 @@
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use diesel::sql_query;
+
+use diesel::deserialize::{self, FromSqlRow};
 use dotenvy::dotenv;
-use serde_json::Value;
 use std::env;
 
 #[derive(QueryableByName, Debug)]
@@ -18,8 +19,7 @@ struct Column {
     #[diesel(sql_type = diesel::sql_types::Text)]
     data_type: String,
 }
-
-#[derive(QueryableByName, Debug)]
+#[derive(QueryableByName, Queryable, Debug)]
 struct User {
     #[diesel(sql_type = diesel::sql_types::Text)]
     id: String,
@@ -33,6 +33,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL")?;
+    println!("DATABASE_URL: {}", database_url);
+
     let mut connection = PgConnection::establish(&database_url)?;
 
     // Execute a raw SQL query to get all tables
@@ -51,12 +53,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("column_name: {}, data_type: {}", column.column_name, column.data_type);
     }
 
-    // Execute a raw SQL query to get all rows from the user table
-    let users = sql_query("SELECT id, username FROM user")
-        .load::<User>(&mut connection)?;
+    // Query the users table
+    let results = sql_query(r#"SELECT id, github_id, username FROM "user""#)
+    .load::<User>(&mut connection)?;
 
-    for user in users {
-        println!("id: {}, username: {}", user.id, user.username);
+    // Print the results
+    for user in results {
+        println!("id: {}, username: {}, github_id: {}", user.id, user.username, user.github_id);
     }
 
     Ok(())
