@@ -1,0 +1,10 @@
+[package]
+name = "crate_encrypt"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+soft-aes = "0.2.2"
+dotenvy = "0.15"
+hex = "0.4"
