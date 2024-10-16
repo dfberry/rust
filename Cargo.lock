@@ -373,6 +373,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "crate_diesel_orm_quickstart"
+version = "0.1.0"
+dependencies = [
+ "diesel",
+ "dotenvy",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "crate_diesel_ormless_quickstart"
 version = "0.1.0"
 dependencies = [
