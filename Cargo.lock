@@ -1246,12 +1246,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "neon-rust-example"
+name = "neon-rust-async-postgres-example"
 version = "0.1.0"
 dependencies = [
  "openssl",
- "postgres",
  "postgres-openssl",
+ "tokio",
+ "tokio-postgres",
 ]
 
 [[package]]
@@ -1428,20 +1429,6 @@ dependencies = [
  "cpufeatures",
  "opaque-debug",
  "universal-hash",
-]
-
-[[package]]
-name = "postgres"
-version = "0.19.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95c918733159f4d55d2ceb262950f00b0aebd6af4aa97b5a47bb0655120475ed"
-dependencies = [
- "bytes",
- "fallible-iterator",
- "futures-util",
- "log",
- "tokio",
- "tokio-postgres",
 ]
 
 [[package]]
