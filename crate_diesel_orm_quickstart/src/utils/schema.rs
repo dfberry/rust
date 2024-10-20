@@ -14,7 +14,7 @@ diesel::table! {
         id -> Text,
         user_id -> Text,
         expires_at -> Timestamptz,
-        created_at -> Timestamptz,
+        created_adbt -> Timestamptz,
     }
 }
 

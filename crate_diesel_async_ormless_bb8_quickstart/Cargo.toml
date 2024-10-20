@@ -1,0 +1,19 @@
+[package]
+name = "crate_diesel_async_ormless_bb8_quickstart"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1.66"
+axum = { version = "0.7.5", features = ["macros"] }
+axum-extra = { version = "0.9.3", features = ["typed-header"] }
+bb8 = "0.8"
+diesel-async = { version = "0.3.1", features = ["postgres", "bb8"] }
+dotenvy = "0.15"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+diesel = "2"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
