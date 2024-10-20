@@ -1,0 +1,36 @@
+use establish_connection;
+use github_user_crud::*;
+
+fn main() {
+    let connection = &mut establish_connection();
+
+    // Create a new user
+    let new_user = create_user(connection, "1", "github_1", "user1")
+        .expect("Error creating new user");
+
+    println!("Created user: {:?}", new_user);
+
+    // Read a user
+    let user = read_user(connection, "1")
+        .expect("Error reading user");
+
+    println!("Read user: {:?}", user);
+
+    // Update a user
+    let updated_rows = update_user(connection, "1", "new_username")
+        .expect("Error updating user");
+
+    println!("Updated {} rows", updated_rows);
+
+    // List all users
+    let users = read_all_users(connection)
+        .expect("Error reading all users");
+
+    println!("All users: {:?}", users);
+
+    // Delete a user
+    let deleted_rows = delete_user(connection, "1")
+        .expect("Error deleting user");
+
+    println!("Deleted {} rows", deleted_rows);
+}
