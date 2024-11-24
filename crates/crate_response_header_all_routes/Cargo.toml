@@ -1,0 +1,15 @@
+[package]
+name = "crate_response_header_all_routes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7.9" }
+axum-extra = { version = "0.9.6", features = ["typed-header"] }
+http-body-util = "0.1.0"
+hyper = "1.0.0"
+tokio = { version = "1.0", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5.0", features = ["map-request-body", "util"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
