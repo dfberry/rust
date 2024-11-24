@@ -19,15 +19,6 @@ struct Column {
     #[diesel(sql_type = diesel::sql_types::Text)]
     data_type: String,
 }
-#[derive(QueryableByName, Queryable, Debug)]
-struct User {
-    #[diesel(sql_type = diesel::sql_types::Text)]
-    id: String,
-    #[diesel(sql_type = diesel::sql_types::Text)]
-    github_id: String,
-    #[diesel(sql_type = diesel::sql_types::Text)]
-    username: String,
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
@@ -51,15 +42,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     for column in columns {
         println!("column_name: {}, data_type: {}", column.column_name, column.data_type);
-    }
-
-    // Query the users table
-    let results = sql_query(r#"SELECT id, github_id, username FROM "user""#)
-    .load::<User>(&mut connection)?;
-
-    // Print the results
-    for user in results {
-        println!("id: {}, username: {}, github_id: {}", user.id, user.username, user.github_id);
     }
 
     Ok(())

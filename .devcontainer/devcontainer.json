@@ -20,7 +20,11 @@
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [
+		3000,
+		3005,
+		4000
+	],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "rustup update && rustc --version",
@@ -29,7 +33,12 @@
 			"extensions": [
 				"rust-lang.rust-analyzer",
 				"vadimcn.vscode-lldb",
-				"PolyMeilex.rust-targets"
+				"PolyMeilex.rust-targets",
+				"1YiB.rust-bundle",
+				"humao.rest-client",
+				"mhutchie.git-graph",
+				"eamodio.gitlens",
+				"GitHub.vscode-pull-request-github"
 			]
 		}
 	},
