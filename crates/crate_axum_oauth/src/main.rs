@@ -28,7 +28,10 @@ use oauth2::{
     ClientSecret, CsrfToken, RedirectUrl, Scope, TokenResponse, TokenUrl,
 };
 use serde::{Deserialize, Serialize};
+<<<<<<< HEAD
 use async_session::serde_json;
+=======
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 static COOKIE_NAME: &str = "SESSION";
@@ -54,9 +57,15 @@ async fn main() {
     };
 
     let app = Router::new()
+<<<<<<< HEAD
         .route("/", get(index_handler))
         .route("/auth/github", get(login_authorized_handler))
         //.route("/auth/authorized", get(login_authorized_handler))
+=======
+        .route("/", get(login_handler))
+        .route("/auth/github", get(github_auth_handler))
+        .route("/auth/authorized", get(login_authorized_handler))
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
         .route("/protected", get(protected_handler))
         .route("/logout", get(logout_handler))
         .route("/login", get(login_handler))
@@ -122,6 +131,7 @@ fn oauth_client() -> Result<BasicClient, AppError> {
         RedirectUrl::new(redirect_url).context("failed to create new redirection URL")?,
     ))
 }
+<<<<<<< HEAD
 #[derive(Deserialize, Serialize, Debug)]
 struct Plan {
     name: String,
@@ -178,12 +188,24 @@ async fn index_handler(user: Option<User>) -> impl IntoResponse {
         None => "You're not logged in.\nVisit `/auth/discord` to do so.".to_string(),
     }
 }
+=======
+
+#[derive(Debug, Serialize, Deserialize)]
+struct User {
+    id: String,
+    username: String
+}
+
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
 async fn login_handler() -> impl IntoResponse {
 
     let client_id = env::var("GITHUB_CLIENT_ID").expect("oauth GITHUB_CLIENT_ID must be set");
     let github_redirect_url = env::var("GITHUB_REDIR_URL").expect("login GITHUB_REDIR_URL must be set");
     let state = env::var("GITHUB_STATE").expect("oauth GITHUB_STATE must be set");
+<<<<<<< HEAD
     let auth_url = env::var("GITHUB_AUTH_URL").expect("oauth GITHUB_AUTH_URL must be set");
+=======
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
 
     println!("client_id: {}", client_id);
     println!("redirect_url: {}", github_redirect_url);
@@ -194,8 +216,13 @@ async fn login_handler() -> impl IntoResponse {
     //let url = "https://github.com/login/oauth/authorize?response_type=code&client_id=Iv23lioYASs8e1ndFThW&state=Ih6uwwxbLv7dwxR1mRHYNYBWFmJuNA8clq0P6zqsy6k&redirect_uri=https%3A%2F%2Fopen-source-board.com%2Flogin%2Fgithub%2Fcallback";
 
     let github_login_url = format!(
+<<<<<<< HEAD
         "{}?response_type=code&client_id={}&state={}&redirect_uri={}",
         auth_url, client_id,  encode(&state), encode(&github_redirect_url)
+=======
+        "https://github.com/login/oauth/authorize?response_type=code&client_id={}&state={}&redirect_uri={}",
+        client_id,  encode(&state), encode(&github_redirect_url)
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
     );
     println!("github_login_url: {}", github_login_url);
 
@@ -275,6 +302,7 @@ struct AuthRequest {
     code: String,
     state: String,
 }
+<<<<<<< HEAD
 #[derive(Deserialize, Debug)]
 struct AccessTokenResponse {
     access_token: String,
@@ -342,12 +370,15 @@ async fn exchange_code_for_token(
     }
    
 }
+=======
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
 
 async fn login_authorized_handler(
     Query(query): Query<AuthRequest>,
     State(store): State<MemoryStore>,
     State(oauth_client): State<BasicClient>,
 ) -> Result<impl IntoResponse, AppError> {
+<<<<<<< HEAD
 
     println!("query: {:?}", query);
 
@@ -373,6 +404,26 @@ async fn login_authorized_handler(
         .context("failed to fetch user data")?;
 
     println!("user_data: {:?}", user_data);
+=======
+    // Get an auth token
+    let token = oauth_client
+        .exchange_code(AuthorizationCode::new(query.code.clone()))
+        .request_async(async_http_client)
+        .await
+        .context("failed in sending request request to authorization server")?;
+
+    // Fetch user data from github
+    let client = reqwest::Client::new();
+    let user_data: User = client
+        .get("https://api.github.com/user")
+        .bearer_auth(token.access_token().secret())
+        .send()
+        .await
+        .context("failed in sending request to target Url")?
+        .json::<User>()
+        .await
+        .context("failed to deserialize response as JSON")?;
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
 
     // Create a new session filled with user data
     let mut session = Session::new();
@@ -380,8 +431,11 @@ async fn login_authorized_handler(
         .insert("user", &user_data)
         .context("failed in inserting serialized value into session")?;
 
+<<<<<<< HEAD
     println!("session: {:?}", session);
 
+=======
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
     // Store session and get corresponding cookie
     let cookie = store
         .store_session(session)
@@ -389,6 +443,7 @@ async fn login_authorized_handler(
         .context("failed to store session")?
         .context("unexpected error retrieving cookie value")?;
 
+<<<<<<< HEAD
     println!("cookie: {:?}", cookie);
 
     // Build the cookie kv pair
@@ -396,6 +451,11 @@ async fn login_authorized_handler(
 
     println!("cookie format: {:?}", cookie);
 
+=======
+    // Build the cookie
+    let cookie = format!("{COOKIE_NAME}={cookie}; SameSite=Lax; Path=/");
+
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
     // Set cookie
     let mut headers = HeaderMap::new();
     headers.insert(
@@ -403,8 +463,11 @@ async fn login_authorized_handler(
         cookie.parse().context("failed to parse cookie")?,
     );
 
+<<<<<<< HEAD
     println!("set headers: {:?}", headers);
 
+=======
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
     Ok((headers, Redirect::to("/")))
 }
 
@@ -452,6 +515,7 @@ where
     }
 }
 
+<<<<<<< HEAD
 async fn fetch_user_data(token: &str) -> Result<User, anyhow::Error> {
 
     println!("fetch user data");
@@ -498,6 +562,8 @@ async fn fetch_user_data(token: &str) -> Result<User, anyhow::Error> {
 }
 
 
+=======
+>>>>>>> ad368f6fe76ba01078d19ddd8a59936111645d07
 // Use anyhow, define error and enable '?'
 // For a simplified example of using anyhow in axum check /examples/anyhow-error-response
 #[derive(Debug)]
