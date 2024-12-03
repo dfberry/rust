@@ -28,6 +28,7 @@ use oauth2::{
     ClientSecret, CsrfToken, RedirectUrl, Scope, TokenResponse, TokenUrl,
 };
 use serde::{Deserialize, Serialize};
+use async_session::serde_json;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 static COOKIE_NAME: &str = "SESSION";
@@ -53,9 +54,9 @@ async fn main() {
     };
 
     let app = Router::new()
-        .route("/", get(login_handler))
-        .route("/auth/github", get(github_auth_handler))
-        .route("/auth/authorized", get(login_authorized_handler))
+        .route("/", get(index_handler))
+        .route("/auth/github", get(login_authorized_handler))
+        //.route("/auth/authorized", get(login_authorized_handler))
         .route("/protected", get(protected_handler))
         .route("/logout", get(logout_handler))
         .route("/login", get(login_handler))
@@ -121,18 +122,68 @@ fn oauth_client() -> Result<BasicClient, AppError> {
         RedirectUrl::new(redirect_url).context("failed to create new redirection URL")?,
     ))
 }
+#[derive(Deserialize, Serialize, Debug)]
+struct Plan {
+    name: String,
+    space: u64,
+    collaborators: u64,
+    private_repos: u64,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct User {
-    id: String,
-    username: String
+    login: String,
+    id: u64,
+    node_id: String,
+    avatar_url: String,
+    gravatar_id: String,
+    url: String,
+    html_url: String,
+    followers_url: String,
+    following_url: String,
+    gists_url: String,
+    starred_url: String,
+    subscriptions_url: String,
+    organizations_url: String,
+    repos_url: String,
+    events_url: String,
+    received_events_url: String,
+    #[serde(rename = "type")]
+    user_type: String,
+    user_view_type: String,
+    site_admin: bool,
+    name: String,
+    company: String,
+    blog: String,
+    location: String,
+    email: Option<String>,
+    hireable: Option<bool>,
+    bio: String,
+    twitter_username: Option<String>,
+    notification_email: Option<String>,
+    public_repos: u64,
+    public_gists: u64,
+    followers: u64,
+    following: u64,
+    created_at: String,
+    updated_at: String,
+    plan: Option<Plan>,
 }
-
+async fn index_handler(user: Option<User>) -> impl IntoResponse {
+    match user {
+        Some(u) => format!(
+            "Hey {}! You're logged in!\nYou may now access `/protected`.\nLog out with `/logout`.",
+            u.name
+        ),
+        None => "You're not logged in.\nVisit `/auth/discord` to do so.".to_string(),
+    }
+}
 async fn login_handler() -> impl IntoResponse {
 
     let client_id = env::var("GITHUB_CLIENT_ID").expect("oauth GITHUB_CLIENT_ID must be set");
     let github_redirect_url = env::var("GITHUB_REDIR_URL").expect("login GITHUB_REDIR_URL must be set");
     let state = env::var("GITHUB_STATE").expect("oauth GITHUB_STATE must be set");
+    let auth_url = env::var("GITHUB_AUTH_URL").expect("oauth GITHUB_AUTH_URL must be set");
 
     println!("client_id: {}", client_id);
     println!("redirect_url: {}", github_redirect_url);
@@ -143,8 +194,8 @@ async fn login_handler() -> impl IntoResponse {
     //let url = "https://github.com/login/oauth/authorize?response_type=code&client_id=Iv23lioYASs8e1ndFThW&state=Ih6uwwxbLv7dwxR1mRHYNYBWFmJuNA8clq0P6zqsy6k&redirect_uri=https%3A%2F%2Fopen-source-board.com%2Flogin%2Fgithub%2Fcallback";
 
     let github_login_url = format!(
-        "https://github.com/login/oauth/authorize?response_type=code&client_id={}&state={}&redirect_uri={}",
-        client_id,  encode(&state), encode(&github_redirect_url)
+        "{}?response_type=code&client_id={}&state={}&redirect_uri={}",
+        auth_url, client_id,  encode(&state), encode(&github_redirect_url)
     );
     println!("github_login_url: {}", github_login_url);
 
@@ -168,20 +219,24 @@ async fn login_handler() -> impl IntoResponse {
     Html(html_content.to_string())
 }
 
-async fn github_auth_handler(State(client): State<BasicClient>) -> impl IntoResponse {
-    // TODO: this example currently doesn't validate the CSRF token during login attempts. That
-    // makes it vulnerable to cross-site request forgery. If you copy code from this example make
-    // sure to add a check for the CSRF token.
-    //
-    // Issue for adding check to this example https://github.com/tokio-rs/axum/issues/2511
-    let (auth_url, _csrf_token) = client
-        .authorize_url(CsrfToken::new_random)
-        .add_scope(Scope::new("identify".to_string()))
-        .url();
 
-    // Redirect to Discord's oauth service
-    Redirect::to(auth_url.as_ref())
-}
+// // callback returns code and state in query params
+// async fn github_auth_handler(
+//     State(client
+// ): State<BasicClient>) -> impl IntoResponse {
+//     // TODO: this example currently doesn't validate the CSRF token during login attempts. That
+//     // makes it vulnerable to cross-site request forgery. If you copy code from this example make
+//     // sure to add a check for the CSRF token.
+//     //
+//     // Issue for adding check to this example https://github.com/tokio-rs/axum/issues/2511
+//     let (auth_url, _csrf_token) = client
+//         .authorize_url(CsrfToken::new_random)
+//         .add_scope(Scope::new("identify".to_string()))
+//         .url();
+
+//     // Redirect to Discord's oauth service
+//     Redirect::to(auth_url.as_ref())
+// }
 
 // Valid user session required. If there is none, redirect to the auth page
 async fn protected_handler(user: User) -> impl IntoResponse {
@@ -220,36 +275,112 @@ struct AuthRequest {
     code: String,
     state: String,
 }
+#[derive(Deserialize, Debug)]
+struct AccessTokenResponse {
+    access_token: String,
+    expires_in: u32,
+    refresh_token: String,
+    refresh_token_expires_in: u32,
+    scope: String,
+    token_type: String
+}
+
+async fn exchange_code_for_token(
+    client_id: &str,
+    client_secret: &str,
+    code: &str,
+    redirect_uri: &str,
+) -> Result<AccessTokenResponse, anyhow::Error> {
+
+    let client = reqwest::Client::new();
+    let params = [
+        ("client_id", client_id),
+        ("client_secret", client_secret),
+        ("code", code),
+        ("redirect_uri", redirect_uri),
+    ];
+
+    println!("about to request token");
+
+    let response = client
+        .post("https://github.com/login/oauth/access_token")
+        .header("Accept", "application/json")
+        .form(&params)
+        .send()
+        .await?;
+
+    println!("finished requesting token");
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let error_text = response.text().await?;
+        println!("Error: {}", error_text);
+        return Err(anyhow::anyhow!("Request failed with status: {} and error: {}", status, error_text));
+    }
+
+    println!("response: {:?}", response);
+
+    // response statusCode is not 2xx throw error
+    if response.status().is_success() {
+        println!("response is success");
+
+        // Read the raw response text
+        let raw_response_text = response.text().await?;
+        println!("Raw response text: {}", raw_response_text);
+
+        // Deserialize the raw response text into JSON
+        let token_response: AccessTokenResponse = serde_json::from_str(&raw_response_text)
+            .context("failed to deserialize response as JSON")?;
+        println!("token_response: {:?}", token_response);
+
+        Ok(token_response)
+    } else {
+        println!("response is not success");
+        let status = response.status();
+        let error_text = response.text().await?;
+        return Err(anyhow::anyhow!("Request failed with status: {} and error: {}", status, error_text));
+    }
+   
+}
 
 async fn login_authorized_handler(
     Query(query): Query<AuthRequest>,
     State(store): State<MemoryStore>,
     State(oauth_client): State<BasicClient>,
 ) -> Result<impl IntoResponse, AppError> {
-    // Get an auth token
-    let token = oauth_client
-        .exchange_code(AuthorizationCode::new(query.code.clone()))
-        .request_async(async_http_client)
-        .await
-        .context("failed in sending request request to authorization server")?;
 
-    // Fetch user data from github
-    let client = reqwest::Client::new();
-    let user_data: User = client
-        .get("https://api.github.com/user")
-        .bearer_auth(token.access_token().secret())
-        .send()
+    println!("query: {:?}", query);
+
+    let code = query.code.clone();
+    println!("code: {:?}", code);
+
+    let client_id = env::var("GITHUB_CLIENT_ID").expect("oauth GITHUB_CLIENT_ID must be set");
+    let client_secret = env::var("GITHUB_PASSWORD").expect("oauth GITHUB_PASSWORD must be set");
+    let redirect_url = env::var("GITHUB_REDIR_URL").expect("oauth GITHUB_REDIR_URL must be set");
+    let auth_url = env::var("GITHUB_AUTH_URL").expect("oauth GITHUB_AUTH_URL must be set");
+    let token_url = env::var("GITHUB_TOKEN_URL").expect("oauth GITHUB_TOKEN_URL must be set");
+
+    let token = exchange_code_for_token(
+        &client_id,
+        &client_secret,
+        &code,
+        &redirect_url,
+    ).await?;
+    println!("token: {:?}", token);
+
+    let user_data = fetch_user_data(&token.access_token)
         .await
-        .context("failed in sending request to target Url")?
-        .json::<User>()
-        .await
-        .context("failed to deserialize response as JSON")?;
+        .context("failed to fetch user data")?;
+
+    println!("user_data: {:?}", user_data);
 
     // Create a new session filled with user data
     let mut session = Session::new();
     session
         .insert("user", &user_data)
         .context("failed in inserting serialized value into session")?;
+
+    println!("session: {:?}", session);
 
     // Store session and get corresponding cookie
     let cookie = store
@@ -258,8 +389,12 @@ async fn login_authorized_handler(
         .context("failed to store session")?
         .context("unexpected error retrieving cookie value")?;
 
-    // Build the cookie
+    println!("cookie: {:?}", cookie);
+
+    // Build the cookie kv pair
     let cookie = format!("{COOKIE_NAME}={cookie}; SameSite=Lax; Path=/");
+
+    println!("cookie format: {:?}", cookie);
 
     // Set cookie
     let mut headers = HeaderMap::new();
@@ -267,6 +402,8 @@ async fn login_authorized_handler(
         SET_COOKIE,
         cookie.parse().context("failed to parse cookie")?,
     );
+
+    println!("set headers: {:?}", headers);
 
     Ok((headers, Redirect::to("/")))
 }
@@ -314,6 +451,52 @@ where
         Ok(user)
     }
 }
+
+async fn fetch_user_data(token: &str) -> Result<User, anyhow::Error> {
+
+    println!("fetch user data");
+
+    let client = reqwest::Client::new();
+    let response = client
+        .get("https://api.github.com/user")
+        .bearer_auth(token)
+        .header("User-Agent", "dfberry-test")
+        .send()
+        .await
+        .context("failed in sending request to target URL")?;
+
+    println!("response: {:?}", response);
+
+    if response.status().is_success() {
+        println!("response is success");
+
+        // // Read the raw response text
+        // let raw_response_text = response.text().await?;
+        // println!("Raw response text for user: {}", raw_response_text);
+
+        // // Deserialize the raw response text into JSON
+        // let token_response: AccessTokenResponse = serde_json::from_str(&raw_response_text)
+        //     .context("failed to deserialize response as JSON")?;
+        // println!("token_response: {:?}", token_response);
+
+        let user_data: User = response
+        .json()
+        .await
+        .context("failed to deserialize response as JSON")?;
+
+    Ok(user_data)
+
+    } else {
+        println!("response is not success");
+        let status = response.status();
+        let error_text = response.text().await?;
+        return Err(anyhow::anyhow!("Request failed with status: {} and error: {}", status, error_text));
+    }
+
+    
+
+}
+
 
 // Use anyhow, define error and enable '?'
 // For a simplified example of using anyhow in axum check /examples/anyhow-error-response
