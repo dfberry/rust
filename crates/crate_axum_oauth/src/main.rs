@@ -16,7 +16,7 @@ use axum::{
     response::Html,
     async_trait,
     extract::{FromRef, FromRequestParts, Query, State},
-    http::{header::SET_COOKIE, HeaderMap},
+    http::{header::SET_COOKIE, HeaderMap, HeaderValue},
     response::{IntoResponse, Redirect, Response},
     routing::get,
     RequestPartsExt, Router,
@@ -175,7 +175,7 @@ async fn index_handler(user: Option<User>) -> impl IntoResponse {
             "Hey {}! You're logged in!\nYou may now access `/protected`.\nLog out with `/logout`.",
             u.name
         ),
-        None => "You're not logged in.\nVisit `/auth/discord` to do so.".to_string(),
+        None => "You're not logged in.\nVisit `/login` to do so.".to_string(),
     }
 }
 async fn login_handler() -> impl IntoResponse {
@@ -234,7 +234,7 @@ async fn login_handler() -> impl IntoResponse {
 //         .add_scope(Scope::new("identify".to_string()))
 //         .url();
 
-//     // Redirect to Discord's oauth service
+//     // Redirect to GitHubs's oauth service
 //     Redirect::to(auth_url.as_ref())
 // }
 
@@ -246,7 +246,8 @@ async fn protected_handler(user: User) -> impl IntoResponse {
 async fn logout_handler(
     State(store): State<MemoryStore>,
     TypedHeader(cookies): TypedHeader<headers::Cookie>,
-) -> Result<impl IntoResponse, AppError> {
+) -> Result<Response, AppError> {
+
     let cookie = cookies
         .get(COOKIE_NAME)
         .context("unexpected error getting cookie name")?;
@@ -258,15 +259,38 @@ async fn logout_handler(
     {
         Some(s) => s,
         // No session active, just redirect
-        None => return Ok(Redirect::to("/")),
+        None => return Ok(Redirect::to("/").into_response()),
     };
+
+    // Destroy the session
+    store
+    .destroy_session(session.clone())
+    .await
+    .context("failed to destroy session")?;
+
+    // Remove the cookie
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        SET_COOKIE,
+        HeaderValue::from_str(&format!(
+            "{}=; Max-Age=0; Path=/; HttpOnly",
+            COOKIE_NAME
+        ))
+        .unwrap(),
+    );
+
 
     store
         .destroy_session(session)
         .await
         .context("failed to destroy session")?;
 
-    Ok(Redirect::to("/"))
+        let response = Redirect::to("/").into_response();
+        let mut response = Response::from(response);
+        response.headers_mut().extend(headers);
+
+        Ok(response)
+
 }
 
 #[derive(Debug, Deserialize)]
