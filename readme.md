@@ -43,13 +43,14 @@ Fix: update root `Cargo.toml` with resolver of `2`
 ```
 [workspace]
 members = ["crates/*"]
-
-## Examples
-
-* [Rust axum social auth for cron](https://github.com/Cucharoth/crono-server)
 resolver = "2"
 ```
 
 ### Version for rand doesn't update?
 
 No idea why this happened. 
+
+## Examples
+
+* [Rust axum social auth for cron](https://github.com/Cucharoth/crono-server)
+* [Cron scheduler](https://crates.io/crates/tokio-cron-scheduler)
