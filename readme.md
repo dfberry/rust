@@ -43,6 +43,10 @@ Fix: update root `Cargo.toml` with resolver of `2`
 ```
 [workspace]
 members = ["crates/*"]
+
+## Examples
+
+* [Rust axum social auth for cron](https://github.com/Cucharoth/crono-server)
 resolver = "2"
 ```
 
