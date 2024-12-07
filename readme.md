@@ -55,3 +55,4 @@ No idea why this happened.
 * [Rust axum social auth for cron](https://github.com/Cucharoth/crono-server)
 * [Cron scheduler](https://crates.io/crates/tokio-cron-scheduler)
 * [Cron job blog](https://tpbabparn.medium.com/feasibility-of-implementing-cronjob-with-rust-programming-language-186eaed0a7d8)
+* [Example scheduler](https://github.com/IgnisDa/ryot/blob/main/crates/background/src/lib.rs)
