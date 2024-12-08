@@ -1,14 +1,26 @@
+# https://dev.to/rogertorres/first-steps-with-docker-rust-30oi
 # docker build --no-cache -t helloworld:latest .
 # docker run --rm --name helloworld1 helloworld
 
-# 1. This tells docker to use the Rust official image
-FROM rust 
+# Rust as the base image
+FROM rust
 
-# 2. Copy the files in your machine to the Docker image
-COPY ./ ./
+# 1. Create a new empty shell project
+RUN USER=root cargo new --bin helloworld
+WORKDIR /helloworld
 
-# Build your program for release
+# 2. Copy our manifests
+COPY ./Cargo* .
+
+# 3. Build only the dependencies to cache them
 RUN cargo build --release
+RUN rm src/*.rs
 
-# Run the binary
-CMD ["./target/release/helloworld"]
+# 4. Now that the dependency is built, copy your source code
+COPY ./src ./src
+
+# 5. Build for release.
+RUN rm ./target/release/deps/helloworld*
+RUN cargo install --path .
+
+CMD ["helloworld"]
