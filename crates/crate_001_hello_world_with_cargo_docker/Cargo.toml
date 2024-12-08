@@ -1,0 +1,12 @@
+[package]
+name = "crate_001_hello_world_with_cargo_docker"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[[bin]]
+name = "helloworld"
+path = "src/main.rs"

@@ -711,6 +711,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "crate_001_hello_world_with_cargo_docker"
+version = "0.1.0"
+
+[[package]]
 name = "crate_001_hello_world_with_cargo_new"
 version = "0.1.0"
 
