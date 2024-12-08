@@ -1,5 +1,5 @@
 # docker build --no-cache -t helloworld:latest .
-# docker run -p 8080:3030 --rm --name helloworld1 helloworld
+# docker run --rm --name helloworld1 helloworld
 
 # 1. This tells docker to use the Rust official image
 FROM rust 
