@@ -8,25 +8,27 @@ use std::time::Duration;
 // use std::time::Duration;
 use tower::load_shed::LoadShedLayer;
 
+// 3P service - somewhere else
 #[derive(Clone)]
 struct FakeService;
 impl FakeService {
     fn execute(&self, item: Reminder) {
-        println!("Executing: {:?}", item.0);
-        dbg!(&item.0);
+        println!("DOING Something: {:?}", item.0);
     }
 }
 
+// Data struct from 3P service
 #[derive(Default, Debug, Clone)]
 struct Reminder(DateTime<Utc>);
 impl From<DateTime<Utc>> for Reminder {
     fn from(t: DateTime<Utc>) -> Self {
-        println!("from: {:?}", t);
         Reminder(t)
     }
 }
+
+// Apalis worker calls 3P service
 async fn send_reminder(job: Reminder, svc: Data<FakeService>) {
-    println!("Sending reminder: {:?}", job.0);
+    println!("Sending: {:?}", job.0);
     svc.execute(job);
 }
 

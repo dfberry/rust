@@ -1,0 +1,19 @@
+[package]
+name = "crate-cron-apalis-postgres"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+anyhow = "1"
+apalis = { version = "0.6.0", features = ["retry"] }
+apalis-sql = { version = "0.6.0", features = ["postgres"] }
+dotenvy = "0.15.7"
+serde = "1"
+tracing-subscriber = "0.3.11"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+tokio = { version = "1", features = ["full"] }
+tower = { version = "0.4", features = ["buffer"] }
+
+[dependencies.tracing]
+default-features = false
+version = "0.1"
