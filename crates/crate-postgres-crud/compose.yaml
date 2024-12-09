@@ -1,0 +1,28 @@
+# https://stackoverflow.com/questions/25540711/docker-postgres-pgadmin-local-connection
+# `docker ps` // to get pg container name such as f8950ac787c1
+# `docker inspect <dockerContainerId> | grep IPAddress` // get ip of internal running postgres such as 172.19.0.3
+
+version: "3.5"
+services:
+  postgres:
+    container_name: postgres-14
+    image: postgres:14.1
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+     # - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+    hostname: postgres
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      # - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    hostname: pgadmin
