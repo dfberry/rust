@@ -15,6 +15,7 @@ pub struct Item {
     pub id: String,
     pub name: String,
     pub category: String,
+    pub done: Option<bool>,
     #[serde(serialize_with = "serialize_bson_datetime_as_rfc3339_string", deserialize_with = "deserialize_bson_datetime_from_rfc3339_string")]
     pub created_at: bson::DateTime
 }

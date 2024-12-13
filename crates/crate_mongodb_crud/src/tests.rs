@@ -21,6 +21,7 @@ pub async fn tests_by_name(rand_string: &String, collection: &Collection<Item>){
     let new_item = Item {
         id: ObjectId::new().to_string(),
         name: name.clone(),
+        done: None,
         category: category.clone(),
         created_at: bson::DateTime::now()
     };
@@ -55,6 +56,7 @@ pub async fn tests_by_id(rand_string: &String, collection: &Collection<Item>){
     let new_item = Item {
         id: ObjectId::new().to_string(),
         name: name.clone(),
+        done: Some(false),
         category:category.clone(),
         created_at: bson::DateTime::now()
     };
