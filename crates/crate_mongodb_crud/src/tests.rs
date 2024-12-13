@@ -4,6 +4,7 @@ use serde::Deserialize;
 use mongodb::Collection;
 use mongodb::Client;
 use mongodb::bson::doc;
+use bson::DateTime;
 use rand::Rng;
 
 use crate::model::Item;
@@ -16,7 +17,8 @@ pub async fn tests_by_name(rand_string: &String, collection: &Collection<Item>){
     // Add - for name
     let new_item = Item {
         name: name.clone(),
-        category: category.clone()
+        category: category.clone(),
+        created_at: bson::DateTime::now()
     };
     let create_result = crate::crud::create(&collection, &new_item).await;
     let id = create_result.unwrap();
@@ -47,7 +49,8 @@ pub async fn tests_by_id(rand_string: &String, collection: &Collection<Item>){
 
     let new_item = Item {
         name: name.clone(),
-        category:category.clone()
+        category:category.clone(),
+        created_at: bson::DateTime::now()
     };
     let create_result = crate::crud::create(&collection, &new_item).await;
     let id = create_result.unwrap();
