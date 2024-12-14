@@ -729,6 +729,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "crate-postgres-crud-jsonblib"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "dotenvy",
+ "pq-sys",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "tokio",
+ "tower 0.5.1",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "crate_001_hello_world_with_cargo_docker"
 version = "0.1.0"
 
@@ -1046,6 +1064,7 @@ dependencies = [
  "diesel_derives",
  "itoa",
  "pq-sys",
+ "serde_json",
  "uuid",
 ]
 

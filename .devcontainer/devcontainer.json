@@ -30,7 +30,7 @@
 	],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "rustup update && rustc --version",
+	"postCreateCommand": "rustup update && rustc --version && cargo install diesel_cli",
 	"customizations": {
 		"vscode": {
 			"extensions": [
