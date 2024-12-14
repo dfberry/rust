@@ -34,6 +34,13 @@ pub async fn tests_by_name(rand_string: &String, collection: &Collection<Item>){
     let items = crate::crud::read(&collection, filter).await;
     println!("Items: {:?}", items.unwrap());
 
+    // Read with sorting
+    let filter = doc! {};
+    let sort = Some(doc! { "name": -1 }); // descending
+    let limit = Some(1);
+    let items = crate::crud::read2(&collection, filter, sort, limit).await;
+    println!("Sort Items: {:?}", items.unwrap());
+
      // update by name
     let updated_name = format!("item by name updated {}", rand_string);
     let filter = doc! { "name": name.clone(), "category": category.clone()};

@@ -17,6 +17,36 @@ pub async fn create<T: Serialize + Send + Sync>(collection: &Collection<T>, item
     Ok(result.inserted_id.as_object_id().unwrap().to_hex())
 }
 
+pub async fn read2<'a, T: DeserializeOwned + Send + Sync + 'a>(
+    collection: &Collection<T>,
+    filter: Document,
+    sort: Option<Document>,
+    limit: Option<i64>,
+) -> Result<Vec<T>> {
+
+
+    let doc_sort: Document = match sort {
+        Some(sort) => sort,
+        None => doc! { "name": -1 },
+    };
+
+    let doc_limit: i64 = match limit {
+        Some(limit) => limit,
+        None => 100,
+    };
+
+    let mut cursor = collection
+    .find(filter)
+    .sort(doc_sort)
+    .limit(doc_limit)
+    .await?;
+
+    let mut results = Vec::new();
+    while let Some(result) = cursor.next().await {
+        results.push(result?);
+    }
+    Ok(results)
+}
 pub async fn read<'a, T: DeserializeOwned + Send + Sync + 'a>(collection: &Collection<T>, filter: Document) -> Result<Vec<T>> {
     let mut cursor = collection.find(filter).await?;
     let mut results = Vec::new();
