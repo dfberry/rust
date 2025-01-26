@@ -8,22 +8,24 @@ use uuid::Uuid;
 
 pub mod schema;
 
-use crate::schema::myuser;
+use crate::schema::test_table;
 
-#[derive(Queryable, Debug, Serialize, Selectable, Deserialize)]
-#[diesel(table_name = myuser)]
+use diesel::Queryable;
+use diesel::Insertable;
+
+#[derive(Queryable, Selectable, Serialize, Deserialize, Debug)]
+#[diesel(table_name = crate::schema::test_table)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct User {
     pub id: Uuid,
     pub name: String,
-    pub description: Option<String>,
-    pub created_at: chrono::NaiveDateTime,
+    pub date_created: NaiveDateTime
 }
+
 #[derive(Insertable)]
-#[diesel(table_name = myuser)]
+#[diesel(table_name = crate::schema::test_table)]
 pub struct NewUser<'a> {
     pub name: &'a str,
-    pub description: &'a str,
 }
 
 pub fn establish_connection() -> PgConnection {
@@ -33,15 +35,13 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
-pub async fn create_user(connection: &mut PgConnection, name: &str, description: &str) -> User {
-    use crate::schema::myuser;
+pub async fn create_user(connection: &mut PgConnection, name: &str) -> User {
 
     let new_user = NewUser {
-        name: &name,
-        description: &description,
+        name: &name
     };
 
-    diesel::insert_into(myuser::table)
+    diesel::insert_into(test_table::table)
         .values(&new_user)
         .returning(User::as_returning())
         .get_result(connection)
@@ -52,12 +52,11 @@ pub async fn get_user(
     connection: &mut PgConnection,
     user_id: &Uuid,
 ) -> Option<User> {
-    use crate::schema::myuser::dsl::*;
 
     println!("get_user User: {:?}", user_id);
 
-    let users = myuser
-    .filter(id.eq(user_id))
+    let users = test_table::table
+        .filter(test_table::id.eq(user_id))
         .limit(1)
         .select(User::as_select())
         .load(connection)
@@ -74,38 +73,34 @@ pub async fn get_user(
 }
 
 pub async fn get_users(connection: &mut PgConnection) -> Vec<User> {
-    use crate::schema::myuser::dsl::*;
 
-    myuser
+    test_table::table
         .limit(5)
         .select(User::as_select())
         .load(connection)
         .expect("Error loading users")
 }
 pub fn delete_user(connection: &mut PgConnection, user_id: &str) -> usize {
-    use crate::schema::myuser::dsl::*;
 
-    diesel::delete(myuser)
+    diesel::delete(test_table::table)
         .execute(connection)
         .expect("Error deleting user")
 }
 #[tokio::main]
 async fn main() {
 
-    use self::schema::myuser::dsl::*;
-
     let mut connection = establish_connection();
 
-    let user = create_user(&mut connection, "Alice", "Alice's description").await;
+    let user = create_user(&mut connection, "Alice").await;
     println!("Created user {:?}", user);
 
     let found_user = get_user(&mut connection, &user.id).await;
     println!("Found user {:?}", found_user);
 
-    let user2 = create_user(&mut connection, "Bob", "Bob's description").await;
+    let user2 = create_user(&mut connection, "Bob").await;
     println!("Created user {:?}", user2);
 
-    let results = myuser
+    let results = test_table::table
         .limit(10)
         .select(User::as_select())
         .load(&mut connection)

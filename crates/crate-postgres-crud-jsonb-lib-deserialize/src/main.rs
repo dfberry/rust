@@ -27,6 +27,12 @@ struct New_Logfile {
     logfile: Value,
     org_repo: String,
 }
+struct Logfile {
+    id: Uuid,
+    logfile: Value,
+    org_repo: String,
+    created_at: NaiveDateTime,
+}
 
 struct DataItem {
     pub key1: String,
