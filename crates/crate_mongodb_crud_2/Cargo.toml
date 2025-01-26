@@ -1,0 +1,20 @@
+[package]
+name = "crate_mongodb_crud_2"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+bson = "2.13.0"
+chrono = { version = "0.4.39", features = ["serde"] }
+dotenvy = "0.15.7"
+futures = "0.3.31"
+futures-core = "0.3.31"
+futures-executor = "0.3.31"
+futures-io = "0.3.31"
+futures-util = { version = "0.3.31", features = ["io"] }
+mongodb = "3.2.0"
+rand = "0.8.5"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.137"
+tokio = { version = "1.43.0", features = ["full"] }

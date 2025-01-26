@@ -26,7 +26,8 @@
 		3005,
 		4000,
 		5432,
-		8085 // mongo express web ui
+		8085, // mongo express web ui
+		27017
 	],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
