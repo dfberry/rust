@@ -11,7 +11,7 @@ use mongodb::{
 };
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Item {
-    #[serde(serialize_with = "serialize_hex_string_as_object_id", deserialize_with = "deserialize_hex_string_from_object_id")]
+    #[serde(rename = "_id", serialize_with = "serialize_hex_string_as_object_id", deserialize_with = "deserialize_hex_string_from_object_id")]
     pub id: String,
     pub name: String,
     pub category: String,
