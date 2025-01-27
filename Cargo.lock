@@ -344,6 +344,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-async-mongo"
+version = "0.1.0"
+dependencies = [
+ "axum 0.7.9",
+ "bson",
+ "chrono",
+ "dotenvy",
+ "futures",
+ "futures-core",
+ "futures-executor",
+ "futures-io",
+ "futures-util",
+ "mongodb",
+ "rand",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "axum-core"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
