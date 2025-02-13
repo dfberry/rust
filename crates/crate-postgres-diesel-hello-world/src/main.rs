@@ -8,13 +8,13 @@ use uuid::Uuid;
 
 pub mod schema;
 
-use crate::schema::test_table;
+use crate::schema::test_table_2;
 
 use diesel::Queryable;
 use diesel::Insertable;
 
 #[derive(Queryable, Selectable, Serialize, Deserialize, Debug)]
-#[diesel(table_name = crate::schema::test_table)]
+#[diesel(table_name = crate::schema::test_table_2)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct User {
     pub id: Uuid,
@@ -23,7 +23,7 @@ pub struct User {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = crate::schema::test_table)]
+#[diesel(table_name = crate::schema::test_table_2)]
 pub struct NewUser<'a> {
     pub name: &'a str,
 }
@@ -41,7 +41,7 @@ pub async fn create_user(connection: &mut PgConnection, name: &str) -> User {
         name: &name
     };
 
-    diesel::insert_into(test_table::table)
+    diesel::insert_into(test_table_2::table)
         .values(&new_user)
         .returning(User::as_returning())
         .get_result(connection)
@@ -55,8 +55,8 @@ pub async fn get_user(
 
     println!("get_user User: {:?}", user_id);
 
-    let users = test_table::table
-        .filter(test_table::id.eq(user_id))
+    let users = test_table_2::table
+        .filter(test_table_2::id.eq(user_id))
         .limit(1)
         .select(User::as_select())
         .load(connection)
@@ -74,7 +74,7 @@ pub async fn get_user(
 
 pub async fn get_users(connection: &mut PgConnection) -> Vec<User> {
 
-    test_table::table
+    test_table_2::table
         .limit(5)
         .select(User::as_select())
         .load(connection)
@@ -82,7 +82,7 @@ pub async fn get_users(connection: &mut PgConnection) -> Vec<User> {
 }
 pub fn delete_user(connection: &mut PgConnection, user_id: &str) -> usize {
 
-    diesel::delete(test_table::table)
+    diesel::delete(test_table_2::table)
         .execute(connection)
         .expect("Error deleting user")
 }
@@ -100,7 +100,7 @@ async fn main() {
     let user2 = create_user(&mut connection, "Bob").await;
     println!("Created user {:?}", user2);
 
-    let results = test_table::table
+    let results = test_table_2::table
         .limit(10)
         .select(User::as_select())
         .load(&mut connection)
