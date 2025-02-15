@@ -836,6 +836,7 @@ dependencies = [
  "chrono",
  "diesel",
  "dotenvy",
+ "futures",
  "pq-sys",
  "rand",
  "serde",
@@ -843,8 +844,11 @@ dependencies = [
  "serde_json",
  "tokio",
  "tower 0.5.1",
+ "tower-http 0.6.2",
  "tracing",
  "tracing-subscriber",
+ "url",
+ "urlencoding",
  "uuid",
 ]
 
@@ -4266,6 +4270,24 @@ dependencies = [
  "tower 0.4.13",
  "tower-layer",
  "tower-service",
+]
+
+[[package]]
+name = "tower-http"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "403fa3b783d4b626a8ad51d766ab03cb6d2dbfc46b1c5d4448395e6628dc9697"
+dependencies = [
+ "bitflags 2.6.0",
+ "bytes",
+ "futures-util",
+ "http 1.1.0",
+ "http-body 1.0.1",
+ "http-body-util",
+ "pin-project-lite",
+ "tower-layer",
+ "tower-service",
+ "tracing",
 ]
 
 [[package]]

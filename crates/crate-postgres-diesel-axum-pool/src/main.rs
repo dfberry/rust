@@ -47,7 +47,7 @@ pub fn get_users(connection: &mut PgConnection) -> Vec<User> {
 }
 
 pub async fn handler(pool: axum::extract::State<PgPool>) -> impl IntoResponse {
-    println!("handler");
+    println!("handler async");
 
     // Get a connection from the pool in a blocking task
     let users = {
@@ -72,6 +72,31 @@ pub async fn handler(pool: axum::extract::State<PgPool>) -> impl IntoResponse {
         .body(Body::from(json_users))
         .unwrap()
 }
+pub async fn get_users2(conn: &mut PgConnection) -> Result<Vec<User>, diesel::result::Error> {
+    test_table_2::table
+        .limit(5)
+        .select(User::as_select())
+        .load(conn)
+}
+pub async fn handler2(pool: axum::extract::State<PgPool>) -> impl IntoResponse {
+    println!("handler async");
+
+    // Get a connection from the pool asynchronously.
+    let mut conn = pool.get().expect("Failed to get connection");
+    let users = get_users2(&mut conn)
+        .await
+        .expect("Error loading users");
+
+    // Serialize the vector of users as JSON.
+    let json_users = serde_json::to_string(&users)
+        .unwrap_or_else(|_| "[]".to_string());
+
+    Response::builder()
+        .header(http::header::CONTENT_TYPE, "application/json")
+        .status(StatusCode::OK)
+        .body(Body::from(json_users))
+        .unwrap()
+}
 
 #[tokio::main]
 async fn main() {
@@ -81,6 +106,7 @@ async fn main() {
     // Build our application with a route.
     let app = Router::new()
         .route("/", get(handler))
+        .route("/async", get(handler2))
         .with_state(pool);
 
     // run it
