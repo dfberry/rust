@@ -924,8 +924,6 @@ dependencies = [
  "chrono",
  "diesel",
  "dotenvy",
- "futures",
- "pq-sys",
  "rand 0.9.0",
  "serde",
  "serde_derive",
