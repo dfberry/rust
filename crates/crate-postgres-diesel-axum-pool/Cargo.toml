@@ -5,16 +5,16 @@ edition = "2021"
 publish = false
 
 [dependencies]
-axum = { version = "0.7.5", features = ["macros"] }
-axum-extra = { version = "0.9.3", features = ["typed-header"] }
-chrono = { version = "0.4", features = ["serde"] }
-diesel = { version = "2.2.6", features = ["postgres", "chrono", "uuid", "r2d2"] }
-dotenvy = "0.15.0"
+axum = { version = "0.8.1", features = ["macros"] }
+axum-extra = { version = "0.10.0", features = ["typed-header"] }
+chrono = { version = "0.4.39", features = ["serde"] }
+diesel = { version = "2.2.7", features = ["postgres", "chrono", "uuid", "r2d2"] }
+dotenvy = "0.15.7"
 futures = "0.3.31"
-pq-sys = "0.6.1"
-rand = "0.8"
-serde = { version = "1.0.208", features = ["derive"] }
-serde_derive = "1.0.209"
+pq-sys = "0.6.3"
+rand = "0.9.0"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_derive = "1.0.217"
 serde_json = "1.0.127"
 tokio = { version = "1.0", features = ["full"] }
 tower = "0.5.0"
