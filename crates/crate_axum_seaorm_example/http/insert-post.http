@@ -1,0 +1,7 @@
+POST http://localhost:8000/api/post HTTP/1.1
+content-type: application/json
+
+{
+  "title": "Hello, Axum!c 3",
+  "text": "This is my first post using Axum. 3"
+}
