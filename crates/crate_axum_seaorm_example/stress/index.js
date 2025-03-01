@@ -2,6 +2,7 @@ const axios = require("axios");
 
 // Base URL for your API endpoints.
 const BASE_URL = "http://localhost:8000";
+const duration = 10; // duration is minutes, calculate in milliseconds done later
 
 // Create a new post by issuing a POST to the "/" endpoint.
 // Adjust the payload fields based on your API's expected form.
@@ -81,5 +82,6 @@ async function startStressTest(durationMs) {
   console.log("Stress test completed.");
 }
 
-// Run the stress test for 2 minutes (120000ms)
-startStressTest(120000);
+const milliseconds = duration * 60 * 1000;
+
+startStressTest(milliseconds);

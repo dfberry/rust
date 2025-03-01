@@ -6,7 +6,7 @@
 
 1. Turn on the appropriate database feature for your chosen db in `service/Cargo.toml` (the `"sqlx-postgres",` line)
 
-1. Execute `cargo run` to start the server
+1. Execute `RUST_LOG=info cargo run` to start the server
 
 1. Visit [localhost:8000](http://localhost:8000) in browser
 

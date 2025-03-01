@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use chrono::NaiveDateTime;
 use uuid::Uuid;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod schema;
 use crate::schema::test_table_2;
@@ -100,6 +101,12 @@ pub async fn handler2(pool: axum::extract::State<PgPool>) -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
+
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .with_test_writer()
+        .init();
+
     // Initialize connection pool.
     let pool = establish_connection_pool();
 
