@@ -1306,6 +1306,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "crate-postgres-diesel-axum-jsonb"
+version = "0.1.0"
+dependencies = [
+ "axum 0.7.9",
+ "axum-extra 0.9.6",
+ "chrono",
+ "diesel",
+ "dotenvy",
+ "pq-sys",
+ "rand 0.8.5",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "tokio",
+ "tower 0.5.2",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "crate-postgres-diesel-axum-pool"
 version = "0.1.0"
 dependencies = [
