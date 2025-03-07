@@ -50,6 +50,10 @@ resolver = "2"
 
 No idea why this happened. 
 
+## Troubleshooting
+
+Only have 1 vscode instance with the rust-analyzer running. 
+
 ## Examples
 
 * [Rust axum social auth for cron](https://github.com/Cucharoth/crono-server)
