@@ -20,7 +20,7 @@ pub struct CustomQueryResult {
     created_at: NaiveDateTime,
 }
 
-pub fn execute_custom_query(connection: &mut PgConnection) -> Vec<CustomQueryResult> {
+pub fn execute_custom_query(connection: &mut PgConnection, org_repo: &str) -> Vec<CustomQueryResult> {
     let query_statement = r#"
         WITH T as (
             SELECT
@@ -30,7 +30,7 @@ pub fn execute_custom_query(connection: &mut PgConnection) -> Vec<CustomQueryRes
             FROM
                 public.osb_github_logfiles
             WHERE
-                org_repo = 'azure-samples/azure-typescript-e2e-apps'
+                org_repo = $1
             ORDER BY
                 created_at DESC
             LIMIT 30
@@ -42,6 +42,7 @@ pub fn execute_custom_query(connection: &mut PgConnection) -> Vec<CustomQueryRes
         ORDER BY created_at DESC;
     "#;
     let query_results = sql_query(query_statement)
+        .bind::<Text, _>(org_repo)
         .load::<CustomQueryResult>(connection)
         .expect("Error executing custom query");
 
