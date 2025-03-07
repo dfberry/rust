@@ -39,7 +39,7 @@ pub struct CustomQueryResult {
     log_time: NaiveDateTime,
 }
 
-pub fn execute_custom_query(connection: &mut PgConnection, org_repo: &str) -> Vec<CustomQueryResult> {
+pub async fn execute_custom_query(connection: &mut PgConnection, org_repo: &str) -> Vec<CustomQueryResult> {
     let query_statement = r#"
         WITH T as (
             SELECT
