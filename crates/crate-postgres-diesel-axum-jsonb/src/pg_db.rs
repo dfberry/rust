@@ -11,11 +11,20 @@ use chrono::NaiveDateTime;
 use dotenvy::dotenv;
 use std::env;
 use tracing::info;
-
-#[derive(QueryableByName, Serialize, Deserialize, Debug, Default)]
+#[derive(QueryableByName, Queryable, Serialize, Deserialize, Debug, Default)]
 pub struct CustomQueryResult {
     #[diesel(sql_type = Text)]
     disk_usage: String,
+    #[diesel(sql_type = Text)]
+    fork_count: String,
+    #[diesel(sql_type = Text)]
+    open_prs_count: String,
+    #[diesel(sql_type = Text)]
+    watches_count: String,
+    #[diesel(sql_type = Text)]
+    issues_count: String,
+    #[diesel(sql_type = Text)]
+    stars_count: String,
     #[diesel(sql_type = Timestamp)]
     created_at: NaiveDateTime,
 }
@@ -37,8 +46,13 @@ pub fn execute_custom_query(connection: &mut PgConnection, org_repo: &str) -> Ve
         )
         SELECT
             logfile ->> 'diskUsage' as "disk_usage",
+            logfile ->> 'forkCounts' as "fork_count",
+            logfile ->> 'openPRsCount' as "open_prs_count",
+            logfile ->> 'watchesCount' as "watches_count",
+            logfile ->> 'openIssuesCount' as "issues_count",
+            logfile ->> 'starsCount' as "stars_count",
             created_at
-        from T
+        FROM T
         ORDER BY created_at DESC;
     "#;
     let query_results = sql_query(query_statement)
