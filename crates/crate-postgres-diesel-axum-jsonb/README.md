@@ -224,3 +224,50 @@ date: Thu, 06 Mar 2025 14:40:30 GMT
   }
 ]
 ```
+
+## Strongly typed results
+
+```
+        WITH T as (
+            SELECT
+                org_repo,
+                logfile,
+                created_at
+            FROM
+                public.osb_github_logfiles
+            WHERE
+                org_repo = 'azure-samples/azure-typescript-e2e-apps'
+            ORDER BY
+                created_at DESC
+            LIMIT 30
+        )
+        SELECT
+        created_at as "log_time",
+        (logfile ->> 'diskUsage')::int as "disk_usage",
+        (logfile ->> 'openPRsCount')::int as "open_prs_count",
+        (logfile ->> 'openIssuesCount')::int as "open_issues_count",
+        (logfile ->> 'forksCount')::int as "forks_count",
+        (logfile ->> 'watchersCount')::int as "watchers_count",
+        (logfile ->> 'stargazersCount')::int as "stargazers_count",
+        (logfile ->> 'createdAt')::timestamp as "created_at",
+        (logfile ->> 'updatedAt')::timestamp as "updated_at",
+        (logfile ->> 'pushedAt')::timestamp as "pushed_at"
+        from T
+        ORDER BY created_at DESC;
+```
+
+## Troubleshooting
+
+The following error is not accurate. If the type can be coerced into your Rust type, which a number can move to a string easily, then this issues is if the column is nullable. If the column isn't nullable, don't use the Option on the Rust field. 
+
+```
+    = note: this is a mismatch between what your query returns and what your type expects the query to return
+     = note: the fields in your struct need to match the fields returned by your query in count, order and type
+     = note: consider using `#[derive(Selectable)]` or #[derive(QueryableByName)] + `#[diesel(check_for_backend(_))]` 
+             on your struct `CustomQueryResult` and in your query `.select(CustomQueryResult::as_select())` to get a better error message
+     = help: the trait `load_dsl::private::CompatibleType<U, DB>` is implemented for `Untyped`
+     = note: required for `query_builder::sql_query::UncheckedBind<SqlQuery, &str, diesel::sql_types::Text>` to implement `LoadQuery<'_, _, CustomQueryResult>`
+note: required by a bound in `diesel::RunQueryDsl::load`
+    --> /usr/local/cargo/registry/src/index.crates.io-6f17d22bba15001f/diesel-2.2.7/src/query_dsl/mod.rs:1542:15
+     |
+```

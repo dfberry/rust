@@ -10,7 +10,6 @@ use axum::{
     Router,
     routing::get
 };
-use schema::osb_github_logfiles::org_repo;
 
 pub mod pg_db;
 pub mod schema;
@@ -27,11 +26,11 @@ pub async fn handler() -> impl IntoResponse {
 
     let org_repo_name = "azure-samples/azure-typescript-e2e-apps";
 
-    let repo_data = execute_custom_query(&mut connection, &org_repo_name);
+    let repo_data = execute_custom_query(&mut connection, &org_repo_name).await;
     println!("repo_data");
 
     // Serialize the vector of users as JSON.
-    let json_data = match serde_json::to_string(&repo_data) {
+    let json_data = match serde_json::to_string(&repo_data){
         Ok(json) => json,
         Err(_) => "[]".to_string(),
     };

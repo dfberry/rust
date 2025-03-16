@@ -1,0 +1,3 @@
+GET http://localhost:3000/protected
+Content-Type: application/json
+x-admin-key: secret
