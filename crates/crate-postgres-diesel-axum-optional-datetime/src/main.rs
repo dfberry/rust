@@ -40,10 +40,9 @@ pub struct Item {
 #[derive(Insertable, Deserialize, Debug)]
 #[diesel(table_name = crate::schema::test_table_optional_datetime)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
-pub struct NewItem<'a> {
-    pub name: &'a str,
-    pub optional_date_created: Option<NaiveDateTime>,
-    pub date_created: NaiveDateTime,
+pub struct NewItem {
+    pub name: String,
+    pub optional_date_created: Option<NaiveDateTime>
 }
 
 pub fn establish_connection() -> PgConnection {
@@ -102,12 +101,12 @@ pub async fn get_all_items_handler() -> impl IntoResponse {
     }
 }
 
-pub async fn insert_item<'a>(connection: &mut PgConnection, new_item: &'a NewItem<'a>) -> Result<Item, diesel::result::Error> {
+pub async fn insert_item(connection: &mut PgConnection, new_item: &NewItem) -> Result<Item, diesel::result::Error> {
     diesel::insert_into(test_table_optional_datetime::table)
         .values(new_item)
         .get_result(connection)
 }
-pub async fn insert_item_handler(Json(item): Json<NewItem<'_>>) -> impl IntoResponse {
+pub async fn insert_item_handler(Json(item): Json<NewItem>) -> impl IntoResponse {
     let mut connection = establish_connection();
     println!("connection");
 

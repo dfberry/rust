@@ -1,4 +1,0 @@
-# The runtime environment has ADMIN_KEY and the request query parameter is admin_key
-# The values must match
-GET http://localhost:3001/ HTTP/1.1
-content-type: application/json
