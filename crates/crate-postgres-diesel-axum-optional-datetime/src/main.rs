@@ -33,6 +33,7 @@ use crate::schema::test_table_optional_datetime;
 pub struct Item {
     pub id: Uuid,
     pub name: String,
+    pub success: bool,
     pub optional_date_created: Option<NaiveDateTime>,
     pub date_created: NaiveDateTime,
 }
@@ -42,6 +43,7 @@ pub struct Item {
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct NewItem {
     pub name: String,
+    pub success: bool,
     pub optional_date_created: Option<NaiveDateTime>
 }
 
