@@ -6,7 +6,5 @@ POST http://localhost:3001/insert HTTP/1.1
 content-type: application/json
 
 {
-        "name": "Alice",
-        "success": true,
-        "optional_date_created": "2021-10-01T00:00:00"
+        "name": "Jack"
 }
