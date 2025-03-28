@@ -1664,6 +1664,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "crate_langchain_tool"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "dotenvy",
+ "langchain-rust",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "crate_mongodb_crud"
 version = "0.1.0"
 dependencies = [

@@ -1,68 +1,33 @@
 use std::error::Error;
 use serde_json::{json, Value};
 use async_trait::async_trait;
-use serde::Deserialize;
-use serde::Serialize;
 use langchain_rust::tools::Tool;
 
-use crate::my_feature::MyAddFeature;
-
-struct MyToolResults {
-    status: bool,
-    error: Option<String>,
-    value: Option<f64>
-}
-
-#[derive(Serialize, Deserialize)]
-struct MyToolInput {
-    a: f64,
-    b: f64
-}
+pub use crate::my_feature::MyAddFeature;
 
 #[async_trait]
 impl Tool for MyAddFeature {
+    async fn run(&self, input: Value) -> Result<String, Box<dyn Error + 'static>> {
+        let a = input["a"].as_f64().ok_or("Missing or invalid 'a'".to_string())?;
+        let b = input["b"].as_f64().ok_or("Missing or invalid 'b'".to_string())?;
+        let sum = a + b;
+        Ok(format!("The sum of {} and {} is {}", a, b, sum))
+    }
+
     fn name(&self) -> String {
-        String::from("Tool_MyAddFeature")
+        "MyTool".to_string()
     }
 
     fn description(&self) -> String {
-        String::from(
-            r#""Wrapper for MyAddFeature. "#
-        )
-    }
-
-    fn run(&self, input: MyToolInput) -> Result<MyToolResults, Box<dyn Error>> {
-
-        match MyAddFeature::add(input.a, input.b) {
-            Ok(sum) => {
-                let result = MyToolResults {
-                    status: true,
-                    error: None,
-                    value: Some(sum)
-                };
-                println!("Tool_MyAddFeature: Successfully added numbers: {} + {} = {}", input.a, input.b, sum);
-                Ok(result)
-            }
-            Err(e) => {
-                println!("Tool_MyAddFeature: Error occurred: {}", e);
-                Err(Box::new(e))
-            }
-        }
+        "A tool that adds two numbers together.".to_string()
     }
 
     fn parameters(&self) -> Value {
         json!({
-            "description": "Adds two numbers together.",
             "type": "object",
             "properties": {
-                "a": {
-                    "type": "number",
-                    "description": "The first number"
-                },
-                "b": {
-                    "type": "number",
-                    "description": "The second number"
-                }
+                "a": { "type": "number" },
+                "b": { "type": "number" }
             },
             "required": ["a", "b"]
         })

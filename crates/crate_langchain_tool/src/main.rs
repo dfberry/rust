@@ -9,7 +9,8 @@ pub mod my_feature;
 pub mod my_tool;
 
 use serde_json::json;
-
+use crate::my_tool::MyAddFeature;
+use langchain_rust::tools::Tool;
 
 #[tokio::main]
 async fn main() {
@@ -24,4 +25,12 @@ async fn main() {
     let open_ai = OpenAI::new(azure_config);
     let response = open_ai.invoke("Why is the sky blue?").await.unwrap();
     println!("{}", response);
+
+    let tool = MyAddFeature::default();
+    let input = json!({ "a": 10.0, "b": 20.0 });
+
+    match tool.run(input).await {
+        Ok(result) => println!("Tool result: {}", result),
+        Err(e) => eprintln!("Error: {}", e),
+    }
 }
