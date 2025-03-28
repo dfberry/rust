@@ -6,5 +6,6 @@ POST http://localhost:3001/insert HTTP/1.1
 content-type: application/json
 
 {
-        "name": "Bob"
+        "name": "Bob",
+        "success": true
 }

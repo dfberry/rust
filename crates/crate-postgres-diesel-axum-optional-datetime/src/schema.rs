@@ -13,6 +13,7 @@ diesel::table! {
     test_table_optional_datetime (id) {
         id -> Uuid,
         name -> Text,
+        success -> Bool,
         optional_date_created -> Nullable<Timestamptz>,
         date_created -> Timestamptz,
     }
