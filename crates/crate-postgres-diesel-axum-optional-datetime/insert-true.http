@@ -1,0 +1,12 @@
+# The runtime environment has ADMIN_KEY and the request query parameter is admin_key
+# The values must match
+# The NaiveDateTime type in Rust expects a specific format, which includes seconds. 
+# The correct format should be YYYY-MM-DDTHH:MM:SS.
+POST http://localhost:3001/insert HTTP/1.1
+content-type: application/json
+
+{
+        "name": "Alice",
+        "success": true,
+        "optional_date_created": "2021-10-01T00:00:00"
+}
