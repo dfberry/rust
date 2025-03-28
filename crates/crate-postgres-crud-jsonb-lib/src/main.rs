@@ -1,19 +1,13 @@
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use serde::{Deserialize, Serialize};
-use chrono::NaiveDateTime;
 use dotenvy::dotenv;
 use serde_json::json;
-use tracing::Value;
 use std::env;
-use uuid::Uuid;
-use serde_json::value;
 
 pub mod schema;
 pub mod models;
 
 use self::models::*;
-use diesel::prelude::*;
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -21,17 +15,6 @@ pub fn establish_connection() -> PgConnection {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
-}
-
-struct New_Logfile {
-    logfile: Value,
-    org_repo: String,
-}
-
-struct DataItem {
-    pub key1: String,
-    pub key2: String,
-    pub key3: String,
 }
 
 fn main() {
@@ -46,14 +29,14 @@ fn main() {
         "key3": "value3",
     });
 
-    let Logfile = New_Logfile {
+    let new_record = NewLogfile {
         logfile: &jsonb_data,
         org_repo: "azure-samples/azure-typescript-e2e-apps",
     };
 
     // insert logfile into db
     diesel::insert_into(logfiles)
-        .values(&Logfile)
+        .values(&new_record)
         .execute(connection)
         .expect("Error saving new post");
 

@@ -1,19 +1,17 @@
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use serde::{Deserialize, Serialize};
-use chrono::NaiveDateTime;
 use dotenvy::dotenv;
 use serde_json::json;
 
 use std::env;
-use uuid::Uuid;
-use serde_json::value;
-use tracing::Value;
 pub mod schema;
 pub mod models;
+use self::schema::logfiles::dsl::*;
+use self::models::{
+    Logfile,
+    NewLogFile,
+};
 
-use self::models::*;
-use diesel::prelude::*;
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -23,25 +21,8 @@ pub fn establish_connection() -> PgConnection {
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
-struct New_Logfile {
-    logfile: Value,
-    org_repo: String,
-}
-struct Logfile {
-    id: Uuid,
-    logfile: Value,
-    org_repo: String,
-    created_at: NaiveDateTime,
-}
-
-struct DataItem {
-    pub key1: String,
-    pub key2: String,
-    pub key3: String,
-}
-
 fn main() {
-    use self::schema::logfiles::dsl::*;
+
 
     let connection = &mut establish_connection();
 
@@ -52,14 +33,14 @@ fn main() {
         "key3": "value3",
     });
 
-    let Logfile = New_Logfile {
+    let log_file = NewLogFile {
         logfile: &jsonb_data,
         org_repo: "azure-samples/azure-typescript-e2e-apps",
     };
 
     // insert logfile into db
     diesel::insert_into(logfiles)
-        .values(&Logfile)
+        .values(&log_file)
         .execute(connection)
         .expect("Error saving new post");
 
